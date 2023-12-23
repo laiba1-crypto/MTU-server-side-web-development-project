@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- ######################################## NAVBAR Start ########################################  -->
+
+  <div class="nav">
+    <input type="checkbox" id="nav-check">
+    <div class="nav-header">
+
+    </div>
+    <div class="nav-btn">
+      <label for="nav-check">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+    </div>
+
+    <div class="nav-links">
+      <a href="./home.html">Home</a>
+      <a href="./aboutus.html">AboutUs</a>
+      <a href="./help.html">Help</a>
+    </div>
+    <h1 style="margin-left: 240px;">MTU Assignment</h1>
+  </div>
+  </div>
+  </div>
+  <!-- ######################################## NAVBAR END ########################################  -->
+  <!-- ################################# Form Start #########################################x -->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="form-group">
+          <label for="exampleInputEmail1">Name</label>
+          <input type="text" class="form-control" id="formName" aria-describedby="emailHelp"
+            placeholder="Enter Assignment Name" required>
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Module</label>
+          <input type="text" class="form-control" id="formModule" aria-describedby="emailHelp"
+            placeholder="Enter Assignment Module" required>
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Description</label>
+          <input type="text" class="form-control" id="formDescription" aria-describedby="emailHelp"
+            placeholder="Enter Assignment Desc" required>
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Percentage</label>
+          <input type="number" class="form-control" id="formPercentage" aria-describedby="emailHelp" max="100"
+            placeholder="Enter Assignment Percentage %" required>
+          <div id="percentageError" class="text-danger"></div>
+
+        </div>
+        <br>
+        <!-- <div class="form-group">
+                    <label for="exampleInputEmail1">Due Date</label>
+                    <input type="date" class="form-control" id="formDue" aria-describedby="emailHelp" placeholder="Enter Assignment Due Date" required>
+                  </div> -->
+        <br>
+        <button id="submitButton" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ################################# Form END ######################################### -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+
+
+      function addAssignment(event) {
+        event.preventDefault();
+
+        const name = document.getElementById("formName").value;
+        const module = document.getElementById("formModule").value;
+        const description = document.getElementById("formDescription").value;
+        const percentage = document.getElementById("formPercentage").value;
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 14);
+        var year = dueDate.getFullYear();
+        var month = dueDate.getMonth();
+        var day = dueDate.getDate();
+        const newDate = new Date(year, month, day);
+        const originalDate = new Date(newDate);
+        var year = originalDate.getUTCFullYear();
+        var month = originalDate.getUTCMonth() + 1;
+        var day = originalDate.getUTCDate();
+        const desiredDateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+        const formData = {
+          name: name,
+          module: module,
+          description: description,
+          percentage: percentage,
+          dueDate: desiredDateStr
+        }
+
+        $.ajax({
+          url: "http://localhost:8000/add",
+          type: "POST",
+          data: JSON.stringify(formData),
+          contentType: "application/json",
+          success: function (response) {
+            // alert("Assignment Created Successfully");
+            window.alert('Assignment Created Successfully');
+            window.location.href = './home.html';
+          },
+          error: function (error) {
+            alert("Something Went Wrong in creating an assignment");
+
+          },
+        });
+      }
+      $("#submitButton").on("click", function (event) {
+        addAssignment(event);
+      });
+
+
+      // ################################## Validation #################################################
+      $("#formPercentage").on("keyup", function () {
+        var percentage = $(this).val();
+        if (percentage < 1 || percentage > 100) {
+          $("#percentageError").text("Please enter a percentage between 1 and 100.");
+          $("#submitButton").prop("disabled", true);
+          return;
+        } else {
+          $("#percentageError").text("");
+          $("#submitButton").prop("disabled", false);
+        }
+      });
+      // ################################## Validation #################################################
+
+    });
+
+  </script>
+
+</body>
+
+</html>
